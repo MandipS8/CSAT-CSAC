@@ -1,0 +1,268 @@
+const express = require('express')
+const path = require('path')
+const app = express()
+require('../models/mongoose')
+const publicDirectoryPath = path.join(__dirname, '../public')
+const viewsPath = path.join(__dirname, '../views')
+const bodyparser = require('body-parser');
+const User = require('../models/user')
+app.use(bodyparser.urlencoded({
+    extended: true
+}));
+
+app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+app.use(express.static(publicDirectoryPath))
+
+app.get('/', (req, res) => {
+    res.render('login')
+})
+
+app.get('/signUp', (req, res) => {
+    res.render("signUp")
+})
+
+app.post('/submit',async (req, res) => {
+    const user = new User()
+    try{
+    user.firstName=req.body.firstName
+    user.lastName=req.body.lastName
+    user.email=req.body.email
+    user.password=req.body.password
+    user.age=req.body.age
+    user.typeOfTechie=req.body.typeOfTechie
+    user.gender=req.body.gender
+    console.log('chal bc')
+    console.log(user)
+    await user.save()
+    console.log('chal bc')
+    res.send('Used saved succesfully')
+    console.log('user saved succesfully')
+}
+catch(e){
+    res.status(400).send('Unexpected error')
+}
+})
+
+app.listen(7000, (req, res) => {
+    console.log('server is running at 6000')
+})
+
+
+
+
+
+CONNECTION CODING
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://127.0.0.1:27017/Sign-Up-App', {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+}).then(res => {
+    console.log('connection successful')
+}).catch((err) => {
+    console.log('cannot connect to database' + err)
+})
+
+module.exports =mongoose
+
+
+PACKAGE JSON
+{
+  "name": "cpl-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "author": "Mandip",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "hbs": "^4.1.1",
+    "mongoose": "^5.10.11",
+    "nodemon": "^2.0.6",
+    "request": "^2.88.2"
+  }
+}
+
+
+
+LOGIN PAGE
+<html>
+    <head>
+        <title>Sign up form</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div class="sign-up-form">
+            <img src="images/icon2.png">
+            <h1>Techie Connect</h1>
+            <form>
+                <input type="email" class="input-box" placeholder="Your Email">
+                <input type="password" class="input-box" placeholder="Your Password">
+                <p><span><input type="checkbox"</span> i agree to the terms of services</p>
+                <button type="button" class="signup-btn" onclick=redirect()>Sign up</button>
+                <hr>
+                <p class="or">OR</p>
+                <a><button type="button" class="signup-btn2" >Login</button></a>
+
+            </form>
+        </div>
+
+ <script> 
+     function redirect(){
+        location.href="/signUp"
+     }
+ </script>
+    </body>
+</html>
+
+
+SIGN UP PAGE AND STYLE
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    * {
+  box-sizing: border-box;}
+  form{
+   
+}
+.radio{
+display:inline;
+width:70px;
+}
+.user-detail {
+    height: 100vh;
+    border: 2px solid #f1f1f1;
+    padding: 16px;
+    background-color: white;
+    width: 60%;
+    
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.inline-radio {
+  display: flex;
+  border-radius: 3px;
+  overflow: hidden;
+ width: 80%;
+ border:#434140;
+ border-width: 1px;
+ border-radius: 5px;
+}
+
+
+  
+
+select{
+    width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;}
+}
+fieldset {
+      overflow: hidden
+    }
+    
+    .some-class {
+      float: left;
+      clear: none;
+    }
+    
+    label {
+      float: left;
+      clear: none;
+      display: block;
+      padding: 0px 1em 0px 8px;
+    }
+    
+    input[type=radio],
+    input.radio {
+      float: left;
+      clear: none;
+      margin: 2px 0 0 2px;
+    }
+input{
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;}
+input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;}
+button[type=submit] {
+    background-color: #434140;
+    color: #ffffff;
+    padding: 10px 20px;
+    margin: 50px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+    font-size: 20px;}
+label{
+  font-size: 18px;;}
+button[type=submit]:hover {
+  background-color:#3d3c3c;}
+</style>
+</head>
+<div style="margin-left: 30%;float:right;">
+<body >
+<!--====form section start====-->
+<div class="user-detail">
+    <h2> Register Here!</h2>
+    <form action="/submit" method="POST">
+          <label>First Name</label>
+          <input type="text" placeholder="Enter First Name" name="firstName" >
+          <label> Last Name</label>
+          <input type="text" placeholder="Enter Last Name" name="lastName" >
+          <label>Email Address</label>
+          <input type="email" placeholder="Enter Email Address" name="email" >
+          <label>Password</label>
+          <input type="text" placeholder="Enter Password" name="password" >
+          <label>Age</label><br>
+        <Select name=age >
+            <option>---Choose Age---</option>
+            <option>18</option>
+        </Select></span><br><br>
+        <label>Type of Techie</label><br>
+        <Select name="typeOfTechie">
+        <option>Techno Guru</option>
+        <option>IT Engineer</option>
+        <option>Software Manager</option>
+    </Select><br>
+        <label>Gender</label><br>
+        <group class="inline-radio">
+            <div> <span style="float:left;"></span><input type="radio" value="Male" name ="gender"><label>Male</label></div>
+          <span style="margin-left:50px;">  <div><input type="radio" value="Female" name ="gender" checked><label>Female</label></div></span>
+        </group>
+           
+           
+         
+             
+          <button type="submit" style="background:  #800000;">Submit</button>
+        
+</div>
+<!--====form section start====-->
+</body>
+</div>
+</html>
+
